@@ -25,6 +25,9 @@ jobs:
         run: pnpm install
 
       - name: Build
+        run: pnpm run build
+
+      - name: Package
         run: pnpm run package
 
       - name: Create Release

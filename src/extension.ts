@@ -154,19 +154,37 @@ function updateDiagnostics(document: vscode.TextDocument) {
   const chineseRegex = /[\u4e00-\u9fa5]+/g;
   let match;
 
-  while ((match = chineseRegex.exec(text)) !== null) {
-    const startPos = document.positionAt(match.index);
-    const endPos = document.positionAt(match.index + match[0].length);
-    const range = new vscode.Range(startPos, endPos);
+  // 逐行处理文本
+  for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
+    const line = document.lineAt(lineIndex);
+    const lineText = line.text;
 
-    const diagnostic = new vscode.Diagnostic(
-      range,
-      "发现中文字符，建议添加翻译",
-      vscode.DiagnosticSeverity.Information
-    );
+    // 检查该行是否包含注释
+    const isComment =
+      lineText.trim().startsWith("//") ||
+      lineText.trim().startsWith("/*") ||
+      lineText.trim().startsWith("*");
 
-    diagnostic.code = "createTranslation";
-    diagnostics.push(diagnostic);
+    // 如果不是注释行，则检查中文字符
+    if (!isComment) {
+      while ((match = chineseRegex.exec(lineText)) !== null) {
+        const startPos = new vscode.Position(lineIndex, match.index);
+        const endPos = new vscode.Position(
+          lineIndex,
+          match.index + match[0].length
+        );
+        const range = new vscode.Range(startPos, endPos);
+
+        const diagnostic = new vscode.Diagnostic(
+          range,
+          "发现中文字符，建议添加翻译",
+          vscode.DiagnosticSeverity.Information
+        );
+
+        diagnostic.code = "createTranslation";
+        diagnostics.push(diagnostic);
+      }
+    }
   }
 
   diagnosticCollection.set(document.uri, diagnostics);
