@@ -224,10 +224,10 @@ async function updateInlineDecorations(editor: vscode.TextEditor) {
         // 创建装饰
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
-          hoverMessage: `🌐 ${modulePrefix}.${snakeKey}`,
+          hoverMessage: `🌐 ${modulePrefix}.${snakeKey}: ${module.content[snakeKey]}`,
           renderOptions: {
             before: {
-              contentText: `「${module.content[snakeKey]}」`,
+              contentText: `${module.content[snakeKey]}`,
               color: new vscode.ThemeColor("editorCodeLens.foreground"),
               margin: "0 4px",
               border: "1px solid #ffffff1a",
@@ -252,17 +252,19 @@ function updateDecoratorType(context: vscode.ExtensionContext) {
     inlineDecorator.dispose();
   }
 
-  // 创建新的装饰器类型
-  inlineDecorator = vscode.window.createTextEditorDecorationType({
-    textDecoration: isFolded ? "none; display: none" : "none",
-    opacity: isFolded ? "0.6" : "1",
-    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
-    before: isFolded
-      ? {
-          contentText: "",
-        }
-      : undefined,
-  });
+  if (isFolded) {
+    // 创建新的装饰器类型
+    inlineDecorator = vscode.window.createTextEditorDecorationType({
+      textDecoration: isFolded ? "none; display: none" : "none",
+      opacity: isFolded ? "0.6" : "1",
+      rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+      before: isFolded
+        ? {
+            contentText: "",
+          }
+        : undefined,
+    });
+  }
 
   // 更新所有打开的编辑器
   vscode.window.visibleTextEditors.forEach((editor) => {
@@ -498,9 +500,9 @@ export function activate(context: vscode.ExtensionContext) {
       isFolded = !isFolded;
       updateDecoratorType(context);
       // 显示状态消息
-      vscode.window.showInformationMessage(
-        `翻译文本已${isFolded ? "折叠" : "展开"}`
-      );
+      // vscode.window.showInformationMessage(
+      //   `翻译文本已${isFolded ? "折叠" : "展开"}`
+      // );
     }
   );
 
