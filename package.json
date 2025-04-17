@@ -2,8 +2,8 @@
   "name": "ftools-vscode",
   "displayName": "Ftools",
   "description": "Flutter/Dart 项目的国际化文本管理工具",
-  "version": "0.0.1",
-  "publisher": "scnon",
+  "version": "0.0.2",
+  "publisher": "flutter-getx-extension",
   "author": {
     "name": "scnon",
     "url": "https://github.com/scnon"
@@ -26,7 +26,7 @@
     "chinese"
   ],
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
     "Other",
@@ -49,6 +49,16 @@
         "title": "切换翻译文本折叠"
       }
     ],
+    "configuration": {
+      "title": "Ftools",
+      "properties": {
+        "ftools.generateConstKeyFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否自动生成 const_key.dart 文件"
+        }
+      }
+    },
     "keybindings": [
       {
         "command": "ftools-vscode.toggleTranslationFold",
@@ -62,7 +72,7 @@
     "vscode:prepublish": "pnpm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
+    "package": "webpack --mode production --devtool hidden-source-map && vsce package",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
@@ -70,17 +80,18 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.99.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0",
-    "eslint": "^9.23.0",
-    "typescript": "^5.8.2",
-    "ts-loader": "^9.5.2",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@types/vscode": "^1.80.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.18.34",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0",
+    "typescript": "^5.1.3",
+    "ts-loader": "^9.4.3",
+    "webpack": "^5.85.0",
+    "webpack-cli": "^5.1.1",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.19.0"
   }
 }

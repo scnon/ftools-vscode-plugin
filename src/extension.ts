@@ -119,25 +119,29 @@ function readTranslateConfig(): TranslateModule[] {
 }
 
 // 保存翻译配置
-function saveTranslateConfig(config: TranslateModule[]): void {
-  const workspaceRoot = getWorkspaceRoot();
-  if (!workspaceRoot) {
-    return;
-  }
-
-  const configPath = path.join(workspaceRoot, "translate", "translate.json");
+async function saveTranslateConfig(config: TranslateModule[]) {
   try {
-    // 确保目录存在
-    const dir = path.dirname(configPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    const workspaceRoot = getWorkspaceRoot();
+    if (!workspaceRoot) {
+      vscode.window.showErrorMessage("请先打开工作区");
+      return;
     }
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+    const configPath = path.join(workspaceRoot, "translate", "translate.json");
+    const configDir = path.dirname(configPath);
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true });
+    }
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
-    // 更新 const_key.dart
-    updateConstKeyFile(config);
+    // 根据配置决定是否生成 const_key.dart 文件
+    const generateConstKeyFile = vscode.workspace
+      .getConfiguration("ftools")
+      .get("generateConstKeyFile", true);
+    if (generateConstKeyFile) {
+      await updateConstKeyFile(config);
+    }
   } catch (error) {
-    console.error("保存翻译配置失败:", error);
+    vscode.window.showErrorMessage("保存翻译配置失败：" + error);
   }
 }
 
@@ -421,7 +425,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       // 保存配置
-      saveTranslateConfig(config);
+      await saveTranslateConfig(config);
 
       // 创建编辑
       const edit = new vscode.WorkspaceEdit();
