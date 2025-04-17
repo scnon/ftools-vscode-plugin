@@ -1,13 +1,38 @@
 {
   "name": "ftools-vscode",
-  "displayName": "ftools_vscode",
-  "description": "Ftools vscode plugin",
+  "displayName": "Ftools",
+  "description": "Flutter/Dart 项目的国际化文本管理工具",
   "version": "0.0.1",
+  "publisher": "scnon",
+  "author": {
+    "name": "scnon",
+    "url": "https://github.com/scnon"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scnon/ftools-vscode-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/scnon/ftools-vscode-plugin/issues"
+  },
+  "homepage": "https://github.com/scnon/ftools-vscode-plugin#readme",
+  "keywords": [
+    "flutter",
+    "dart",
+    "i18n",
+    "internationalization",
+    "translation",
+    "chinese"
+  ],
   "engines": {
     "vscode": "^1.99.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Formatters",
+    "Linters",
+    "Programming Languages"
   ],
   "activationEvents": [
     "onLanguage:dart"
