@@ -151,7 +151,7 @@ function updateDiagnostics(document: vscode.TextDocument) {
   const text = document.getText();
 
   // 匹配中文字符的正则表达式
-  const chineseRegex = /[\u4e00-\u9fa5]+/g;
+  const chineseRegex = /(?:[\u4e00-\u9fa5]+[a-zA-Z]*[\u4e00-\u9fa5]*)+/g;
   let match;
 
   // 逐行处理文本
