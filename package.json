@@ -2,12 +2,13 @@
   "name": "ftools-vscode",
   "displayName": "Ftools",
   "description": "Flutter/Dart 项目的国际化文本管理工具",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "flutter-getx-extension",
   "author": {
     "name": "scnon",
     "url": "https://github.com/scnon"
   },
+  "icon": "images/icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",
