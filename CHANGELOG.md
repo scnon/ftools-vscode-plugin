@@ -4,6 +4,12 @@ All notable changes to the "ftools-vscode" extension will be documented in this 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.3] - 2025-06-25
+
+### Changed
+
+- 优化：查找翻译模块时，兼容 snake_case 和 camelCase 的模块名称（如 user_center、userCenter 都能正确匹配 user_center 模块）。
+
 ## [0.1.2] - 2025-05-30
 
 ### Added

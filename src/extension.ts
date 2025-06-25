@@ -215,8 +215,13 @@ async function updateInlineDecorations(editor: vscode.TextEditor) {
       const camelKey = match[2];
       const snakeKey = toSnakeCase(camelKey);
 
+      // 兼容 snake_case 和 camelCase 的模块名称
+      // 将 modulePrefix 转为 snake_case 后再查找模块
+      const modulePrefixSnake = toSnakeCase(modulePrefix);
       // 查找对应的翻译模块
-      const module = config.find((m) => m.prefix === modulePrefix);
+      const module = config.find(
+        (m) => toSnakeCase(m.prefix) === modulePrefixSnake
+      );
       if (module && module.content[snakeKey]) {
         const startPos = new vscode.Position(line, match.index);
         const endPos = new vscode.Position(line, match.index + match[0].length);
