@@ -455,7 +455,16 @@ export function activate(context: vscode.ExtensionContext) {
       // 创建编辑
       const edit = new vscode.WorkspaceEdit();
       const camelKey = toCamelCase(translationKey);
-      const replacement = `Ikey.${modulePrefix}.k${camelKey}.tr`;
+      // 新增：将 modulePrefix 从 snake_case 转为 snakCase
+      function toSnakCase(str: string): string {
+        // 首字母小写，遇到下划线则下一个字母大写
+        return str
+          .replace(/_([a-zA-Z])/g, (_: string, c: string) => c.toUpperCase())
+          .replace(/^([A-Z])/, (s: string) => s.toLowerCase());
+      }
+      const snakCaseModulePrefix = toSnakCase(modulePrefix);
+      // 替换内容中的模块名使用 snakCase
+      const replacement = `Ikey.${snakCaseModulePrefix}.k${camelKey}.tr`;
 
       // 获取整行文本以正确处理引号
       const line = document.lineAt(range.start.line);

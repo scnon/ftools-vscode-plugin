@@ -4,6 +4,10 @@ All notable changes to the "ftools-vscode" extension will be documented in this 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.4] - 2025-06-25
+
+- 优化：创建翻译时，替换内容的 k模块名称会自动将 snake_case 转为 snakCase（如 user_center -> userCenter）。
+
 ## [0.1.3] - 2025-06-25
 
 ### Changed
