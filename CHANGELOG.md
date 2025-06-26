@@ -4,6 +4,11 @@ All notable changes to the "ftools-vscode" extension will be documented in this 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.6] - 2025-06-26
+
+- 修复：中文检测会带上末尾的单引号或者双引号
+- 修复：调整生成 const_key.dart 的内容
+
 ## [0.1.5] - 2025-06-26
 
 ### Added
