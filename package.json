@@ -2,7 +2,7 @@
   "name": "ftools-vscode",
   "displayName": "Ftools",
   "description": "Flutter/Dart 项目的国际化文本管理工具",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "flutter-getx-extension",
   "author": {
     "name": "scnon",
@@ -36,7 +36,8 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:dart"
+    "onLanguage:dart",
+    "onView:ftoolsChineseScanView"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -48,6 +49,21 @@
       {
         "command": "ftools-vscode.toggleTranslationFold",
         "title": "切换翻译文本折叠"
+      },
+      {
+        "command": "ftools-vscode.scanChineseFiles",
+        "title": "扫描项目中的中文文件",
+        "icon": "$(search)"
+      },
+      {
+        "command": "ftools-vscode.refreshChineseFiles",
+        "title": "刷新",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ftools-vscode.configChineseScan",
+        "title": "配置扫描设置",
+        "icon": "$(gear)"
       }
     ],
     "configuration": {
@@ -57,6 +73,42 @@
           "type": "boolean",
           "default": true,
           "description": "是否自动生成 const_key.dart 文件"
+        },
+        "ftools.chineseScan.excludeDirs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".git",
+            "build",
+            "node_modules",
+            ".dart_tool",
+            ".vscode",
+            "ios",
+            "android",
+            "web",
+            "linux",
+            "macos",
+            "windows",
+            "lib/i18n"
+          ],
+          "description": "中文扫描时排除的目录列表"
+        },
+        "ftools.chineseScan.includeComments": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否扫描注释中的中文"
+        },
+        "ftools.chineseScan.fileExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".dart"
+          ],
+          "description": "要扫描的文件扩展名"
         }
       }
     },
@@ -67,7 +119,35 @@
         "mac": "cmd+alt+t",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "ftoolsChineseScanView",
+          "name": "中文扫描",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "ftools-vscode.scanChineseFiles",
+          "when": "view == ftoolsChineseScanView",
+          "group": "navigation"
+        },
+        {
+          "command": "ftools-vscode.refreshChineseFiles",
+          "when": "view == ftoolsChineseScanView",
+          "group": "navigation"
+        },
+        {
+          "command": "ftools-vscode.configChineseScan",
+          "when": "view == ftoolsChineseScanView",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "webpack --mode production --devtool hidden-source-map",

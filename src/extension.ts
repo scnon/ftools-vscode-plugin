@@ -3,6 +3,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { ChineseFilesTreeDataProvider } from "./treeView";
+import { CHINESE_REGEX, findChineseInLine } from "./utils";
 
 // 用于存储诊断集合
 let diagnosticCollection: vscode.DiagnosticCollection;
@@ -148,42 +150,31 @@ async function saveTranslateConfig(config: TranslateModule[]) {
 // 更新文件的诊断信息
 function updateDiagnostics(document: vscode.TextDocument) {
   const diagnostics: vscode.Diagnostic[] = [];
-  const text = document.getText();
-
-  // 匹配中文字符的正则表达式
-  const chineseRegex = /(?:[\u4e00-\u9fa5]+[a-zA-Z]*[\u4e00-\u9fa5]*)+/g;
-  let match;
 
   // 逐行处理文本
   for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
     const line = document.lineAt(lineIndex);
     const lineText = line.text;
 
-    // 检查该行是否包含注释
-    const isComment =
-      lineText.trim().startsWith("//") ||
-      lineText.trim().startsWith("/*") ||
-      lineText.trim().startsWith("*");
+    // 使用 utils 中的函数查找中文（不包含注释）
+    const matches = findChineseInLine(lineText, lineIndex, false);
 
-    // 如果不是注释行，则检查中文字符
-    if (!isComment) {
-      while ((match = chineseRegex.exec(lineText)) !== null) {
-        const startPos = new vscode.Position(lineIndex, match.index);
-        const endPos = new vscode.Position(
-          lineIndex,
-          match.index + match[0].length
-        );
-        const range = new vscode.Range(startPos, endPos);
+    for (const match of matches) {
+      const startPos = new vscode.Position(lineIndex, match.column);
+      const endPos = new vscode.Position(
+        lineIndex,
+        match.column + match.text.length
+      );
+      const range = new vscode.Range(startPos, endPos);
 
-        const diagnostic = new vscode.Diagnostic(
-          range,
-          "发现中文字符，建议添加翻译",
-          vscode.DiagnosticSeverity.Information
-        );
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        "发现中文字符，建议添加翻译",
+        vscode.DiagnosticSeverity.Information
+      );
 
-        diagnostic.code = "createTranslation";
-        diagnostics.push(diagnostic);
-      }
+      diagnostic.code = "createTranslation";
+      diagnostics.push(diagnostic);
     }
   }
 
@@ -288,6 +279,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "ftools-vscode" is now active!');
+
+  // 调试日志：确认扩展激活
+  console.log("正在注册侧边栏视图...");
 
   // 恢复折叠状态
   isFolded = context.workspaceState.get("translationFolded", true);
@@ -529,6 +523,77 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
+  // 注册侧边栏 TreeView
+  const treeDataProvider = new ChineseFilesTreeDataProvider();
+  const treeView = vscode.window.createTreeView("ftoolsChineseScanView", {
+    treeDataProvider: treeDataProvider,
+  });
+
+  console.log("侧边栏 TreeView 注册完成");
+
+  // 注册扫描命令
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "ftools-vscode.scanChineseFiles",
+      async () => {
+        await treeDataProvider.scanChineseFiles();
+      }
+    )
+  );
+
+  // 注册刷新命令
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "ftools-vscode.refreshChineseFiles",
+      async () => {
+        await treeDataProvider.scanChineseFiles();
+      }
+    )
+  );
+
+  // 注册打开中文位置命令
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "ftools-vscode.openChineseLocation",
+      async (filePath: string, line: number, column: number) => {
+        try {
+          const uri = vscode.Uri.file(filePath);
+          const document = await vscode.workspace.openTextDocument(uri);
+          const editor = await vscode.window.showTextDocument(document);
+
+          // 定位到具体位置
+          const position = new vscode.Position(line, column);
+          editor.selection = new vscode.Selection(position, position);
+          editor.revealRange(
+            new vscode.Range(position, position),
+            vscode.TextEditorRevealType.InCenter
+          );
+
+          // 高亮显示中文文本
+          const lineText = document.lineAt(line).text;
+          const chineseMatch = lineText.slice(column).match(/[\u4e00-\u9fa5]+/);
+          if (chineseMatch) {
+            const endColumn = column + chineseMatch[0].length;
+            const range = new vscode.Range(line, column, line, endColumn);
+            editor.selection = new vscode.Selection(range.start, range.end);
+          }
+        } catch (error) {
+          vscode.window.showErrorMessage(`无法打开文件: ${error}`);
+        }
+      }
+    )
+  );
+
+  // 注册配置扫描设置命令
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "ftools-vscode.configChineseScan",
+      async () => {
+        await treeDataProvider.openConfig();
+      }
+    )
+  );
+
   context.subscriptions.push(
     changeDocumentListener,
     openDocumentListener,
@@ -536,7 +601,8 @@ export function activate(context: vscode.ExtensionContext) {
     codeActionProvider,
     createTranslationCommand,
     toggleFoldCommand,
-    inlineDecorator
+    inlineDecorator,
+    treeView
   );
 }
 

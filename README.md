@@ -1,116 +1,116 @@
-# Ftools VSCode Plugin
+# Ftools VSCode Extension
 
-一个用于 Flutter/Dart 项目的 VSCode 插件，提供国际化文本管理功能。
+Flutter/Dart 项目的国际化文本管理工具
 
-## ✨ 功能特性
+## 功能特性
 
-1. 🔍 自动检测中文字符
-   - 在 Dart 文件中自动检测中文字符
-   - 使用蓝色波浪线标注需要翻译的文本
-   - 提供快速修复选项
+### 🔍 中文扫描
 
-2. 🌐 快速创建翻译
-   - 通过快速修复菜单创建翻译
-   - 支持创建新的翻译模块
-   - 自动生成规范的翻译 key
+- **智能扫描**：递归扫描项目中包含中文的文件
+- **精确定位**：点击列表项直接跳转到具体中文位置并高亮显示
+- **树形展示**：分层显示文件和其中的中文内容
+- **灵活配置**：支持自定义排除目录、文件类型等
 
-3. 📝 翻译文本管理
-   - 自动生成 `const_key.dart` 文件
-   - 维护 `translate.json` 配置文件
-   - 支持多模块管理
+### 🌐 翻译管理
 
-4. 👀 内联翻译预览
-   - 在代码中直接显示中文翻译
-   - 使用快捷键切换显示/隐藏翻译文本
-   - 悬停显示翻译 key 信息
+- **快速创建翻译**：右键中文文本快速创建翻译条目
+- **内联显示**：在代码中直接显示翻译内容
+- **模块化管理**：支持按模块组织翻译内容
+- **自动生成**：自动生成 const_key.dart 文件
 
-## 🚀 安装
+## 使用方法
 
-1. 在 VS Code 中打开扩展面板 (Ctrl+Shift+X / Cmd+Shift+X)
-2. 搜索 "Ftools"
-3. 点击 "Install" 安装插件
+### 中文扫描
 
-## 📖 使用说明
+1. **打开侧边栏**：在资源管理器中找到"中文扫描"面板
+2. **开始扫描**：点击搜索图标 🔍 开始扫描项目
+3. **查看结果**：
+   - 文件名后显示中文数量：`main.dart (3)`
+   - 展开文件查看具体中文内容
+   - 点击中文条目直接跳转并高亮
 
-### 检测中文文本
-- 插件会自动检测 Dart 文件中的中文字符
-- 检测到的中文文本会显示蓝色波浪线
-- 将鼠标悬停在标注处可以看到提示信息
+4. **配置扫描**：点击设置图标 ⚙️ 打开配置面板
 
-### 创建翻译
-1. 将光标放在带有波浪线的中文文本上
-2. 点击快速修复图标或使用快捷键 (Ctrl+. / Cmd+.)
-3. 选择 "创建翻译" 选项
-4. 选择或创建翻译模块
-5. 输入翻译 key（使用下划线分割，如：`hello_world`）
+### 配置选项
 
-### 翻译文本预览
-- 使用快捷键 `Ctrl+Alt+T`（Mac：`Cmd+Alt+T`）切换翻译文本的显示/隐藏
-- 将鼠标悬停在翻译文本上可以查看原始的 key
+在 VSCode 设置中搜索 `ftools.chineseScan` 可以找到以下配置：
 
-### 文件结构
-```
-your_project/
-  ├── lib/
-  │   └── i18n/
-  │       └── const_key.dart  // 自动生成的常量文件
-  └── translate/
-      └── translate.json      // 翻译配置文件
-```
-
-### 配置文件格式
-
-#### translate.json
 ```json
-[
-  {
-    "prefix": "common",
-    "content": {
-      "hello_world": "你好世界",
-      "submit": "提交"
-    }
-  },
-  {
-    "prefix": "user",
-    "content": {
-      "login": "登录",
-      "register": "注册"
-    }
-  }
-]
-```
-
-#### const_key.dart
-```dart
-library i18n_const_key;
-
-class Common {
-    static const kHelloWorld = "common_hello_world";
-    static const kSubmit = "common_submit";
-}
-
-class User {
-    static const kLogin = "user_login";
-    static const kRegister = "user_register";
-}
-
-class I18nKey {
-    static final common = Common();
-    static final user = User();
+{
+  // 排除的目录列表
+  "ftools.chineseScan.excludeDirs": [
+    ".git", "build", "node_modules", ".dart_tool", 
+    ".vscode", "ios", "android", "web", 
+    "linux", "macos", "windows", "lib/i18n"
+  ],
+  
+  // 是否扫描注释中的中文
+  "ftools.chineseScan.includeComments": false,
+  
+  // 要扫描的文件扩展名
+  "ftools.chineseScan.fileExtensions": [".dart"]
 }
 ```
 
-## ⌨️ 快捷键
+### 翻译管理
 
-| 功能 | Windows/Linux | macOS |
-|------|---------------|-------|
-| 切换翻译文本显示 | `Ctrl+Alt+T` | `Cmd+Alt+T` |
-| 显示快速修复菜单 | `Ctrl+.` | `Cmd+.` |
+1. **创建翻译**：
+   - 选中中文文本
+   - 右键选择"创建翻译"
+   - 选择或创建翻译模块
+   - 输入翻译键名
 
-## 🤝 贡献
+2. **查看翻译**：
+   - 翻译键会在代码中显示对应的中文内容
+   - 使用 `Ctrl+Alt+T` (Mac: `Cmd+Alt+T`) 切换显示/隐藏
+
+## 快捷键
+
+- `Ctrl+Alt+T` (Mac: `Cmd+Alt+T`): 切换翻译文本折叠
+
+## 配置选项
+
+```json
+{
+  // 是否自动生成 const_key.dart 文件
+  "ftools.generateConstKeyFile": true,
+  
+  // 中文扫描排除目录
+  "ftools.chineseScan.excludeDirs": [
+    ".git", "build", "node_modules", ".dart_tool",
+    ".vscode", "ios", "android", "web", 
+    "linux", "macos", "windows", "lib/i18n"
+  ],
+  
+  // 是否扫描注释中的中文
+  "ftools.chineseScan.includeComments": false,
+  
+  // 扫描的文件扩展名
+  "ftools.chineseScan.fileExtensions": [".dart"]
+}
+```
+
+## 更新日志
+
+### v0.1.4
+
+- ✨ 新增中文扫描功能
+- 🎯 支持精确定位到中文位置
+- ⚙️ 添加可配置的扫描选项
+- 🌲 树形结构展示扫描结果
+- 📁 支持自定义排除目录
+- 💬 支持选择是否扫描注释
+
+### 之前版本
+
+- 翻译管理功能
+- 内联翻译显示
+- 自动生成常量文件
+
+## 贡献
 
 欢迎提交 Issue 和 Pull Request！
 
-## 📄 许可证
+## 许可证
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+MIT License
