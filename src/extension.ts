@@ -30,8 +30,8 @@ function getWorkspaceRoot(): string | undefined {
   return undefined;
 }
 
-// 将下划线格式转换为驼峰格式
-function toCamelCase(str: string): string {
+// 将 snake_case 转换为 ClassName 格式
+function toClassName(str: string): string {
   return str
     .split("_")
     .map((word, index) => {
@@ -46,6 +46,19 @@ function toSnakeCase(str: string): string {
     .replace(/([A-Z])/g, "_$1")
     .toLowerCase()
     .replace(/^_/, "");
+}
+
+// 将 snake_case 转换为 camelCase 格式
+function toCamelCase(str: string): string {
+  return str
+    .split("_")
+    .map((word, index) => {
+      if (index === 0) {
+        return word.toLowerCase();
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join("");
 }
 
 // 更新 const_key.dart 文件
@@ -67,23 +80,23 @@ function updateConstKeyFile(config: TranslateModule[]): void {
 
   // 生成每个模块的类
   config.forEach((module) => {
-    content += `class ${
-      module.prefix.charAt(0).toUpperCase() + module.prefix.slice(1)
-    } {\n`;
+    // 使用 toClassName 函数格式化类名
+    content += `class ${toClassName(module.prefix)} {\n`;
     Object.keys(module.content).forEach((key) => {
-      const camelKey = toCamelCase(key);
+      const camelKey = toClassName(key);
       const snakeKey = toSnakeCase(key);
-      content += `    static const k${camelKey} = "${module.prefix}_${snakeKey}";\n`;
+      content += `    final k${camelKey} = "${module.prefix}_${snakeKey}";\n`;
     });
     content += "}\n\n";
   });
 
   // 生成 I18nKey 类
-  content += "class I18nKey {\n";
+  content += "class Ikey {\n";
   config.forEach((module) => {
-    const className =
-      module.prefix.charAt(0).toUpperCase() + module.prefix.slice(1);
-    content += `    static final ${module.prefix} = ${className}();\n`;
+    // 使用 toSnakCase 函数格式化字段名，使用 toClassName 函数格式化类名
+    const className = toClassName(module.prefix);
+    const fieldName = toCamelCase(module.prefix);
+    content += `    static final ${fieldName} = ${className}();\n`;
   });
   content += "}\n";
 
@@ -448,7 +461,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // 创建编辑
       const edit = new vscode.WorkspaceEdit();
-      const camelKey = toCamelCase(translationKey);
+      const camelKey = toClassName(translationKey);
       // 新增：将 modulePrefix 从 snake_case 转为 snakCase
       function toSnakCase(str: string): string {
         // 首字母小写，遇到下划线则下一个字母大写
